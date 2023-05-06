@@ -1,0 +1,111 @@
+﻿@model  ProductList.Models.ProductVM
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Product Add/Update</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post" asp-area="" asp-controller="Product" asp-action="AddUpdateProduct">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="ProductId" name="ProductId"/>
+
+                <div class="row mb-3">
+                    <div class="col-12"><label for="ProductName">Product Name</label></div>
+                    <div class="col-12"><input type="text" class="form-control" name="ProductName" id="ProductName" placeholder="Enter Name" /></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12"><label for="ProductName">Product Price</label></div>
+                    <div class="col-12"><input type="text" class="form-control" name="ProductPrice" id="ProductName" placeholder="Enter Price" /></div>
+                </div>
+
+                <div class="row nb-3">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+
+
+                </div>
+            </form>
+        </div> 
+        <div class="col-md-6">
+            @{
+                if (TempData["SuccessMsg"] != null)
+                {
+                    <h2 class="bg-success">@TempData["SuccessMsg"]</h2>
+                }
+                if (TempData["ErrorMsg"] != null)
+                {
+                    <h2 class="bg-danger">@TempData["ErrorMsg"]</h2>
+                }
+            }
+         
+
+        </div>
+    </div>
+</div>
+
+<h1>Product List</h1>
+<div class="container">
+    <table class="table table-bordered">
+        <tr>
+            <th>Product Id</th>
+            <th>Product Name</th>
+            <th>Product Price</th>
+            <th>Action</th>
+        </tr>
+        @{
+            if(Model.ProductList!=null && Model.ProductList.Count>0)
+            {
+                foreach(var item in Model.ProductList)
+                {
+                    <tr>
+                        <td>@item.ProductId</td>
+                        <td>@item.ProductName</td>
+                        <td>@item.ProductPrice</td>
+                        <td>
+                            <a onclick="DeleteProductRecord('@item.ProductId')" style="cursor:pointer">Delete</a> &nbsp,&nbsp,&nbsp;
+                            <a onclick="UpdateProductRecord('@item.ProductId','@item.ProductName','@item.ProductPrice')" style="cursor:pointer">Edit</a>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </table>
+
+</div>
+
+<script type="text/javascript">
+    function DeleteProductRecord(ProductId){
+        let response = confirm("Do you want to delete this record");
+        if(response){
+            $.ajax({
+                type:"POST",
+                url:@Url.Action("DeleteProduct","Product"),
+                data:{StudentId:StudentId},
+
+                success: function(response){
+                    if(response,message == "Delete Successfully")
+                    {
+                        window.location.reload();
+                    }  
+                    else{
+                        alert(response.message);
+                    }
+                },
+                complete: function(){},
+                failure:function(jqXHR, textStatus, errorThrown){
+                    alert("Error Pcured ! Please try again");
+                }
+            });
+        }
+    }
+    function UpdateProductRecord(ProductId, ProductName, ProductPrice){
+        $('#ProductId').val(ProductId);
+        $('#ProductName').val(ProductName);
+        $('#ProductPrice').val(ProductPrice);
+    }
+
+</script>
